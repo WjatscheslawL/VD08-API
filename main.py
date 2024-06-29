@@ -6,17 +6,18 @@ app = Flask(__name__)
 
 # формируем путь и методы GET и POST
 
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     weather = None
     news = None
+    quotas = None
     if request.method == 'POST':
         city = request.form['city']
         weather = get_weather(city)
         # передаем информацию о погоде в index.html
         news = get_news()
-    return render_template("index.html", weather=weather, news=news)
+        quotas = get_quotable()
+    return render_template("index.html", weather=weather, news=news, quotas=quotas)
 
 
 # в функции прописываем город, который мы будем вводить в форме
@@ -32,9 +33,16 @@ def get_weather(city):
 
 def get_news():
     api_key = "53198030c8674f16b3e411ad5707a877"
-    url = f"https://newsapi.org/v2/top-headlines?country=us&apiKey={api_key}"
+    url = f"https://newsapi.org/v2/top-headlines?country=ru&apiKey={api_key}"
     response = requests.get(url)
     return response.json().get('articles', [])
+
+
+def get_quotable():
+    api_key = "53198030c8674f16b3e411ad5707a877"
+    url = f"https://api.quotable.io/random"
+    response = requests.get(url)
+    return response.json() #.get('articles', [])
 
 
 if __name__ == '__main__':
